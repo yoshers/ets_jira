@@ -1,6 +1,11 @@
-; $Id$
-name = ETS JIRA Integration
-description = Custom ETS JIRA Integration Module.
+name = ETS Jira
+description = ETS Webform-Jira Integration
 core = 7.x
+package = ETS
+version = 7.x-0.1
+project = ets_jira
+dependencies[] = features
 dependencies[] = webform
-configure = admin/settings/ets_jira
+configure= admin/config/ets/ets_jira
+features[features_api][] = api:2
+features[user_permission][] = administer ets jira settings
