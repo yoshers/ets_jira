@@ -19,8 +19,8 @@ function ets_jira_menu() {
   $items['admin/config/ets/ets_jira'] = array(
     'title' => 'ETS JIRA module settings',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('_ets_jira_admin_form'),
-    'access arguments' => array('administer openberkeley settings'),
+    'page arguments' => array('ets_jira_admin_form'),
+    'access arguments' => array('administer ets jira settings'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'ets_jira.admin.inc',
   );
