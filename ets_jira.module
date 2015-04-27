@@ -5,7 +5,18 @@
 function ets_jira_menu() {
   $items = array();
 
-  $items['admin/settings/ets_jira'] = array(
+  $items['admin/config/ets'] = array(
+    'title' => 'ETS',
+    'description' => 'Configure ETS settings.',
+    'position' => 'left',
+    'weight' => -20,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/config/ets/ets_jira'] = array(
     'title' => 'ETS JIRA module settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_ets_jira_admin_form'),
