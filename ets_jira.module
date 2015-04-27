@@ -17,6 +17,18 @@ function ets_jira_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_permission().
+ */
+function ets_jira_permission() {
+  return array(
+    'administer ets jira settings' => array(
+      'title' => t('Administer ETS Jira Settings'),
+      'description' => t('Access the menu item for ETS Jira settings.'),
+    ),
+  );
+}
+
 // Main Function via webform submission insert hook
 function ets_jira_webform_submission_insert($node, $submission) {
   // Execute function to map numeric values to web form field names
