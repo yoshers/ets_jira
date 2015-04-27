@@ -66,83 +66,84 @@ function ets_jira_webform_submission_insert($node, $submission) {
 
     if (is_object($client)) {
 
-        try {
-            $token = $client->login(variable_get('ets_jira_username'), variable_get('ets_jira_password'));
+      try {
+        $token = $client->login(variable_get('ets_jira_username'), variable_get('ets_jira_password'));
 
-            // Populate Basic JIRA information
-    	    array_push($exclude, $mapping['ets_jira_project'], $mapping['ets_jira_reporter'], $mapping['ets_jira_priority'], $mapping['ets_jira_type'], $mapping['ets_jira_component']);
-            $newIssue->project = $submission->data[$mapping['ets_jira_project']][0];
-            $newIssue->reporter = $submission->data[$mapping['ets_jira_reporter']][0];
-            $newIssue->priority = $submission->data[$mapping['ets_jira_priority']][0];
-            $newIssue->type = $submission->data[$mapping['ets_jira_type']][0];
-            $newIssue->components[0]->id = $submission->data[$mapping['ets_jira_component']][0];
+        // Populate Basic JIRA information
+        array_push($exclude, $mapping['ets_jira_project'], $mapping['ets_jira_reporter'], $mapping['ets_jira_priority'], $mapping['ets_jira_type'], $mapping['ets_jira_component']);
+        $newIssue->project = $submission->data[$mapping['ets_jira_project']][0];
+        $newIssue->reporter = $submission->data[$mapping['ets_jira_reporter']][0];
+        $newIssue->priority = $submission->data[$mapping['ets_jira_priority']][0];
+        $newIssue->type = $submission->data[$mapping['ets_jira_type']][0];
+        $newIssue->components[0]->id = $submission->data[$mapping['ets_jira_component']][0];
 
-	    // Add Additional Component if select_service field exists
-  	    if (array_key_exists('select_service', $mapping)) {
-	    	$newIssue->components[1]->id = $submission->data[$mapping['select_service']][0];
-	  	array_push($exclude, $mapping['select_service']);
-	    }
+        // Add Additional Component if select_service field exists
+        if (array_key_exists('select_service', $mapping)) {
+          $newIssue->components[1]->id = $submission->data[$mapping['select_service']][0];
+          array_push($exclude, $mapping['select_service']);
+        }
 
-	    // Deal with the basic personal info fields
-	    array_push($exclude, $mapping['name']);
-	    $name = $submission->data[$mapping['name']][0];
-            $newIssue->customFieldValues[0]->customfieldId = "customfield_10020";
-            $newIssue->customFieldValues[0]->values[0] = stripslashes($name);
+        // Deal with the basic personal info fields
+        array_push($exclude, $mapping['name']);
+        $name = $submission->data[$mapping['name']][0];
+        $newIssue->customFieldValues[0]->customfieldId = "customfield_10020";
+        $newIssue->customFieldValues[0]->values[0] = stripslashes($name);
 
-	    array_push($exclude, $mapping['phone']);
-	    $phone = $submission->data[$mapping['phone']][0];
-            $newIssue->customFieldValues[1]->customfieldId = "customfield_10024";
-            $newIssue->customFieldValues[1]->values[0] = stripslashes($phone);
+        array_push($exclude, $mapping['phone']);
+        $phone = $submission->data[$mapping['phone']][0];
+        $newIssue->customFieldValues[1]->customfieldId = "customfield_10024";
+        $newIssue->customFieldValues[1]->values[0] = stripslashes($phone);
 
-	    array_push($exclude, $mapping['email']);
-	    $email = $submission->data[$mapping['email']][0];
-            $newIssue->customFieldValues[2]->customfieldId = "customfield_10021";
-            $newIssue->customFieldValues[2]->values[0] = stripslashes($email);
+        array_push($exclude, $mapping['email']);
+        $email = $submission->data[$mapping['email']][0];
+        $newIssue->customFieldValues[2]->customfieldId = "customfield_10021";
+        $newIssue->customFieldValues[2]->values[0] = stripslashes($email);
 
-	    array_push($exclude, $mapping['department']);
-	    $dept = $submission->data[$mapping['department']][0];
-            $newIssue->customFieldValues[3]->customfieldId = "customfield_10023";
-            $newIssue->customFieldValues[3]->values[0] = stripslashes($dept);
+        array_push($exclude, $mapping['department']);
+        $dept = $submission->data[$mapping['department']][0];
+        $newIssue->customFieldValues[3]->customfieldId = "customfield_10023";
+        $newIssue->customFieldValues[3]->values[0] = stripslashes($dept);
 
-	    array_push($exclude, $mapping['uid']);
-	    $uid = $submission->data[$mapping['uid']][0];
-            $newIssue->customFieldValues[4]->customfieldId = "customfield_10083";
-            $newIssue->customFieldValues[4]->values[0] = stripslashes($uid);
+        array_push($exclude, $mapping['uid']);
+        $uid = $submission->data[$mapping['uid']][0];
+        $newIssue->customFieldValues[4]->customfieldId = "customfield_10083";
+        $newIssue->customFieldValues[4]->values[0] = stripslashes($uid);
 
-	    // Add Contact Method = Online Submission
-            $newIssue->customFieldValues[5]->customfieldId = "customfield_10730";
-            $newIssue->customFieldValues[5]->values[0] = 'Online Submission';
+        // Add Contact Method = Online Submission
+        $newIssue->customFieldValues[5]->customfieldId = "customfield_10730";
+        $newIssue->customFieldValues[5]->values[0] = 'Online Submission';
 
-	    // Dump all other data this is not specifically captured into desc
-            $desc = "";
+        // Dump all other data this is not specifically captured into desc
+        $desc = "";
 
-            foreach ($submission->data as $section => $component) {
-	  	if (!in_array($section, $exclude)) {
-            	    $desc .= ucwords(str_replace('_',' ', array_search($section, $mapping))) . ": ";
-            	    $desc .= $component[0] . "\n";
-	  	}
-            }
+        foreach ($submission->data as $section => $component) {
+          if (!in_array($section, $exclude)) {
+            $desc .= ucwords(str_replace('_', ' ', array_search($section, $mapping))) . ": ";
+            $desc .= $component[0] . "\n";
+          }
+        }
 
-            $newIssue->description = utf8_encode(stripslashes(trim($desc)));
-	   
+        $newIssue->description = utf8_encode(stripslashes(trim($desc)));
 
-	    // Summary
-	    $newIssue->summary = $name . " - " .$section_header;
 
-	    // Set ticket creation time
-            $now = $_SERVER['REQUEST_TIME'];
-            //$newIssue->created=$now;
-            //$newIssue->updated=$now;
-            //$newIssue->duedate=$now;
+        // Summary
+        $newIssue->summary = $name . " - " . $section_header;
 
-            $commentAddResult = $client->createIssue($token, $newIssue);
+        // Set ticket creation time
+        $now = $_SERVER['REQUEST_TIME'];
+        //$newIssue->created=$now;
+        //$newIssue->updated=$now;
+        //$newIssue->duedate=$now;
 
-            $client->logout();
+        $commentAddResult = $client->createIssue($token, $newIssue);
 
-      } catch (SoapFault $e) {
-	    // If there are errors, send email submission
-            $admin_msg = "ERROR: Unable to create jira ticket:\n" . $e->getMessage() . "\n";
-            _jira_email_submission($admin_msg, $node, $submission, $backup_email, $section_header);
+        $client->logout();
+
+      }
+      catch (SoapFault $e) {
+        // If there are errors, send email submission
+        $admin_msg = "ERROR: Unable to create jira ticket:\n" . $e->getMessage() . "\n";
+        _jira_email_submission($admin_msg, $node, $submission, $backup_email, $section_header);
 
       } // end try and catch block
 
@@ -154,64 +155,64 @@ function ets_jira_webform_submission_insert($node, $submission) {
 
 // Helper function for connecting to ETS JIRA API as ets_form user with error message
 function _jira_connect($node, $submission, $backup_email, $form_name) {
-    $client = "";
-    try {
-      	$wsdl = variable_get('ets_jira_server');
-    	$client = new SoapClient ($wsdl);
-    } catch (SoapFault $e) {
-        $admin_msg = "ERROR: Unable to connect to JIRA:\n" . $e->getMessage() . "\n";
-        _jira_email_submission($admin_msg, $node, $submission, $backup_email, $form_name);
-    }
-    return $client;
+  $client = "";
+  try {
+    $wsdl = variable_get('ets_jira_server');
+    $client = new SoapClient ($wsdl);
+  }
+  catch (SoapFault $e) {
+    $admin_msg = "ERROR: Unable to connect to JIRA:\n" . $e->getMessage() . "\n";
+    _jira_email_submission($admin_msg, $node, $submission, $backup_email, $form_name);
+  }
+  return $client;
 }
 
 
 // Helper function for Emailing Submissions when JIRA is not available
 function _jira_email_submission($msg, $node, $submission, $backup_email, $form_name) {
-    // Get component mapping
-    $mapping = _jira_webform_component_mapping($node);
-    $body = '';
-    $headers = null;
-    $from = '-fets_admin@media.berkeley.edu';
+  // Get component mapping
+  $mapping = _jira_webform_component_mapping($node);
+  $body = '';
+  $headers = NULL;
+  $from = '-fets_admin@media.berkeley.edu';
 
-    // Send Backup Email if configured to do so
-    if (variable_get('ets_jira_send_backup_email')) {
-        // Add info for reference - webform node and submission IDs
-        $subject = $submission->data[$mapping['name']][0] . " - " . $form_name;
-        // Get all submitted data and add to email body
-        foreach ($submission->data as $section => $component) {
-    	    $body .= ucwords(str_replace('_',' ', array_search($section, $mapping))) . ": ";
-    	    $body .= $component[0] . "\n";
-        }
-        $message = wordwrap($body, 70);
-
-        // Send crafted email for ticket submission to backup email address - commented out for Open Berkeley testing
-        mail("$backup_email", "$subject", "$message", "$headers", "$from");
+  // Send Backup Email if configured to do so
+  if (variable_get('ets_jira_send_backup_email')) {
+    // Add info for reference - webform node and submission IDs
+    $subject = $submission->data[$mapping['name']][0] . " - " . $form_name;
+    // Get all submitted data and add to email body
+    foreach ($submission->data as $section => $component) {
+      $body .= ucwords(str_replace('_', ' ', array_search($section, $mapping))) . ": ";
+      $body .= $component[0] . "\n";
     }
-
-    // Send to backup email and notify the appropriate sysadmins
-    $sysadmins = variable_get('ets_jira_error_email');
-
-    $subject = 'Webform failed to create jira ticket, backup submission completed via email';
-    $body .= $msg;
-    $body .= "\nHostname: " . gethostname() . "\n";
-    $body .= "\nCheck the following webform node: " . $node->nid . "\n";
-    $body .= "\nCheck the following submission: " . $submission->sid . "\n";
-
     $message = wordwrap($body, 70);
 
-    // Send email with error info to sysadmins
-    mail("$sysadmins", "$subject", "$message", "$headers", "$from");
+    // Send crafted email for ticket submission to backup email address - commented out for Open Berkeley testing
+    mail("$backup_email", "$subject", "$message", "$headers", "$from");
+  }
+
+  // Send to backup email and notify the appropriate sysadmins
+  $sysadmins = variable_get('ets_jira_error_email');
+
+  $subject = 'Webform failed to create jira ticket, backup submission completed via email';
+  $body .= $msg;
+  $body .= "\nHostname: " . gethostname() . "\n";
+  $body .= "\nCheck the following webform node: " . $node->nid . "\n";
+  $body .= "\nCheck the following submission: " . $submission->sid . "\n";
+
+  $message = wordwrap($body, 70);
+
+  // Send email with error info to sysadmins
+  mail("$sysadmins", "$subject", "$message", "$headers", "$from");
 }
 
 function _jira_webform_component_mapping($node) {
-    $mapping = array();
-    $components = $node->webform['components'];
-    foreach ($components as $i => $component) {
-    	$key = $component['form_key'];
-    	$mapping[$key] = $i;
-    }
-    return $mapping;
+  $mapping = array();
+  $components = $node->webform['components'];
+  foreach ($components as $i => $component) {
+    $key = $component['form_key'];
+    $mapping[$key] = $i;
+  }
+  return $mapping;
 }
 
-?>

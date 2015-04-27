@@ -54,4 +54,4 @@ function _ets_jira_admin_form_submit($form, &$form_state) {
 
   drupal_set_message(t('Your configuration has been saved.'));
 }
-?>
+
