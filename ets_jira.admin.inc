@@ -1,6 +1,6 @@
 <?php
 // ETS JIRA Admin settings form variables
-function _ets_jira_admin_form($form, &$form_state) {
+function ets_jira_admin_form($form, &$form_state) {
 
   $form = array();
 
@@ -23,7 +23,7 @@ function _ets_jira_admin_form($form, &$form_state) {
     '#title' => 'ETS Jira Password',
     '#required' => TRUE,
   );
-
+  
   $form['ets_jira_error_email'] = array(
     '#type' => 'textfield',
     '#title' => 'ETS Jira Error Email Recipient',
@@ -37,21 +37,5 @@ function _ets_jira_admin_form($form, &$form_state) {
     '#default_value' => variable_get('ets_jira_send_backup_email', TRUE),
   );
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-  );
-
-  return $form;
+  return system_settings_form($form);
 }
-
-function _ets_jira_admin_form_submit($form, &$form_state) {
-  variable_set('ets_jira_server', $form_state['values']['ets_jira_server']);
-  variable_set('ets_jira_username', $form_state['values']['ets_jira_username']);
-  variable_set('ets_jira_password', $form_state['values']['ets_jira_password']);
-  variable_set('ets_jira_error_email', $form_state['values']['ets_jira_error_email']);
-  variable_set('ets_jira_send_backup_email', $form_state['values']['ets_jira_send_backup_email']);
-
-  drupal_set_message(t('Your configuration has been saved.'));
-}
-?>
