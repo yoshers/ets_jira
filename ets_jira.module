@@ -96,7 +96,7 @@ function ets_jira_webform_submission_insert($node, $submission) {
 
         array_push($exclude, $mapping['email']);
         $email = $submission->data[$mapping['email']][0];
-        $newIssue->customFieldValues[2]->customfieldId = "customfield_10021";
+        $newIssue->customFieldValues[2]->customfieldId = "customfield_10930";
         $newIssue->customFieldValues[2]->values[0] = stripslashes($email);
 
         array_push($exclude, $mapping['department']);
